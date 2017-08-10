@@ -53,16 +53,14 @@ Next off, you are recommended to apply access control to govern the URL used for
 ```
 	// See Registration section for context of use.
 
-	container.For<IDocumentRepository>()
-    	.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
+	container.For<IDocumentRepository>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
 ```
 
 **Apply measures directly to all methods within an implementation**
 ```
 	// See Registration section for context of use.
 
-    container.For<UrlResolver>()
-    	.DecorateAllWith((c, i) => proxyGenerator.CreateClassProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+    	container.For<UrlResolver>().DecorateAllWith((c, i) => proxyGenerator.CreateClassProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
 ```
 
 **Scope measurement to a given method or methods**
@@ -70,15 +68,13 @@ Next off, you are recommended to apply access control to govern the URL used for
 	// See Registration section for context of use.
 
 	IProxyGenerationHook methodHook = new SomeMethodsHook("MethodName");
-    container.For<INavigationManager>()
-		.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+	container.For<INavigationManager>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
 ```
 ```
 	// See Registration section for context of use.
 
 	IProxyGenerationHook methodHook = new SomeMethodsHook("MethodName1", "MethodName2");
-    container.For<INavigationManager>()
-		.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+    	container.For<INavigationManager>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
 ```
 
 ### Monitoring
@@ -106,7 +102,7 @@ class AuthenticationServerHealthCheckConvention : IHealthCheckConvention
 		{
 			healthCheckConventionManager.IncludeHealthCheck(Name, () =>
 			{
-            	//Delegate to execute when requesting a healthcheck
+            			//Delegate to execute when requesting a healthcheck
 				//Health check logic goes here. SSO runs if the service is healthy
 				return this._authenticationManager.Invoke().Healthy();
 			});
@@ -140,12 +136,10 @@ public class MetricsInitialization : IConfigurableModule
 		//Measurements
 		ProxyGenerator proxyGenerator = new ProxyGenerator();
 
-		container.For<IContentRepository>()
-			.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+		container.For<IContentRepository>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
 
 		IProxyGenerationHook methodHook = new SomeMethodsHook("GetUserNavigation");
-		container.For<INavigationManager>()
-			.DecorateAllWith((c, i) => 
+		container.For<INavigationManager>().DecorateAllWith((c, i) => 
             	proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
 
 	}
@@ -251,7 +245,7 @@ Fellow Metrics - 2017-08-10T22:31:26.1373Z
                SSO = FAILED: FAILED
     
     PASSED CHECKS
-    		   CRM = PASSED: OK
+	       CRM = PASSED: OK
                ServiceBus = PASSED: OK
                ERP = PASSED: OK
                MA = PASSED: OK
