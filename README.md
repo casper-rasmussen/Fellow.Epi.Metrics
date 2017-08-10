@@ -1,4 +1,4 @@
-# Fellow.Epi.Metrics: Application Metrics made Easy
+# Fellow.Epi.Metrics: Application Measurement and Monitoring made Easy
 
 This Episerver add-on exposes key insights about platform performance and system health. It acts as a reporting platform useful as part of implentation, operation and incident management. By default, it allows you, as an Episerver developer, to easily register code to be measured along with integration endpoints to be monitored.
 
