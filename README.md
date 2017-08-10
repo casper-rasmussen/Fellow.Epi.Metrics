@@ -45,8 +45,7 @@ Next off, you are recommended to apply access control to govern the URL used for
 ```
 	// See Registration section for context of use.
 
-	container.For<IContentRepository>()
-    	.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
+	container.For<IContentRepository>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
 ```
 
 **Apply measures to all methods in your own abstraction**
