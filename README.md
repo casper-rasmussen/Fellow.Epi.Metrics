@@ -88,7 +88,7 @@ Next off, you are recommended to apply access control to govern the URL used for
 Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.
 
 #### Code guidelines
-The add-on relies on aspect oriented principles to ease application of code measurement. By relying on the StructureMap IoC container, via the decorator pattern, you are easily able to decorate an abstraction, an implementation or just a single method with measurement logic. It means, that after the registration, your code are automatically measured.
+The add-on relies on principles in aspect oriented programming to ease application of code measurement. By utilizing the StructureMap Inversion of Control container, via the decorator pattern, you are easily able to decorate an abstraction, an implementation or just a single method with measurement logic. It means, that after the registration, your code is automatically measured.
 
 ```
 	//Use the IoC container to apply logic to a given abstraction or implementation - here it's Episerver's IContentRepository.
@@ -108,14 +108,14 @@ The add-on relies on aspect oriented principles to ease application of code meas
 	container.For<IContentRepository>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
 ```
 
-**Apply measures to all methods in your own abstraction**
+**Apply measuring to all methods in your own abstraction**
 ```
 	// See Registration section for context of use.
 
 	container.For<IDocumentRepository>().DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
 ```
 
-**Apply measures directly to all methods within an implementation**
+**Apply measuring directly to all methods within an implementation**
 ```
 	// See Registration section for context of use.
 
