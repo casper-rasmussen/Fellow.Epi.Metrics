@@ -85,7 +85,20 @@ Next off, you are recommended to apply access control to govern the URL used for
 ## Usage
 
 ### Measurement
-Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.  
+Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.
+
+**Code guidelines**
+The add-on relies on aspect oriented principles to ease application of code measurement. By relying on the StructureMap IoC container, via the decorator pattern, you are easily able to decorate an abstraction, an implementation or just a single method with measurement logic. It means, that after the registration, your code are automatically measured.
+
+```
+	//Use the IoC container to apply logic to a given abstraction or implementation - here it's Episerver's IContentRepository.
+	container.For<IContentRepository>()
+	//Use DecorateAllWith() to add a ApplyMetricsTimingInterceptor, through Castle.Core dynamic proxies, to apply measurements   
+	.DecorateAllWith((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+	
+```
+
+#### Examples
 
 **Apply measuring to any Episerver abstraction - e.g. all methods within Episerver's implementation of IContentRepository**
 
