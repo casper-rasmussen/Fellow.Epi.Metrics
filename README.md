@@ -1,6 +1,52 @@
 # Fellow.Epi.Metrics: Application Measurement and Monitoring made Easy
 
-This Episerver add-on exposes key insights about platform performance and system health. It acts as a reporting platform useful as part of implentation, operation and incident management. By default, it allows you, as an Episerver developer, to easily register code to be measured along with integration endpoints to be monitored.
+This Episerver add-on exposes key insights about platform performance and system health. It acts as a reporting platform useful as part of implementation, operation and incident management. By default, it allows you, as an Episerver developer, to easily register code to be measured along with integration endpoints to be monitored.
+
+**Example performance outputs**
+```
+ [Fellow Metrics] DefaultContentRepository_Get
+   Active Sessions = 0
+        Total Time = 98.00 ms
+             Count = 67 Requests
+        Mean Value = 0.36 Requests/s
+     1 Minute Rate = 0.73 Requests/s
+     5 Minute Rate = 7.48 Requests/s
+    15 Minute Rate = 11.03 Requests/s
+             Count = 67 Requests
+              Last = 0.00 ms
+               Min = 0.00 ms
+               Max = 42.03 ms
+              Mean = 1.47 ms
+            StdDev = 6.17 ms
+            Median = 0.01 ms
+              75% <= 0.02 ms
+              95% <= 14.47 ms
+              98% <= 21.41 ms
+              99% <= 42.03 ms
+            99.9% <= 42.03 ms
+
+```
+
+**Example monitoring output**
+```
+
+ ***** Health Checks - 2017-08-10T22:31:26.1213Z *****
+    Is Healthy = No
+
+    FAILED CHECKS
+
+               SSO = FAILED: FAILED
+    
+    PASSED CHECKS
+	       CRM = PASSED: OK
+               ServiceBus = PASSED: OK
+               ERP = PASSED: OK
+               MA = PASSED: OK
+
+```
+
+
+
 
 It relies on the latest version of [Metrics.NET](https://github.com/Recognos/Metrics.NET), which has been extended to seamlessly integrate with Episerver.
 
@@ -39,6 +85,7 @@ Next off, you are recommended to apply access control to govern the URL used for
 ## Usage
 
 ### Measurement
+Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.  
 
 **Apply measuring to any Episerver abstraction - e.g. all methods within Episerver's implementation of IContentRepository**
 
