@@ -217,7 +217,7 @@ public class MetricsInitialization : IConfigurableModule
 
 If you are unfamiliar with the use of Episerver Initialization Modules, then please visit the [documentation here](http://world.episerver.com/documentation/Items/Developers-Guide/Episerver-Framework/7/Initialization/Creating-an-Initialization-Module/)
 
-## Usage Instructions for Episerver Framework 9.10 and above
+## Usage Instructions for Episerver Framework 9.10 and until Episerver Framework 11.3.1
 
 ### Measurement
 Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.
@@ -332,6 +332,131 @@ public class MetricsInitialization : IConfigurableModule
     {
         //Health Check
         container.For<IHealthCheckConvention>().Add<AuthenticationServerHealthCheckConvention>();
+    }
+
+    public void Initialize(InitializationEngine context)
+    {
+    }
+
+    public void Uninitialize(InitializationEngine context)
+    {
+    }
+
+}
+
+```
+
+If you are unfamiliar with the use of Episerver Initialization Modules, then please visit the [documentation here](http://world.episerver.com/documentation/Items/Developers-Guide/Episerver-Framework/7/Initialization/Creating-an-Initialization-Module/)
+
+## Usage Instructions for Episerver Framework 11.3.1 and up
+
+### Measurement
+Enables you to apply timing measures around code - e.g. execution time of a given method or entire class, responsible of calling an external endpoint.
+
+#### Code guidelines
+The add-on relies on principles in aspect oriented programming to ease application of code measurement. By utilizing the StructureMap Inversion of Control container, via the decorator pattern, you are easily able to decorate an abstraction, an implementation or just a single method with measurement logic. It means, that after the registration, your code is automatically measured.
+
+```
+	//Use the Service Configuration abstraction in Episerver to apply logic to a given abstraction or implementation - here it's 	Episerver's IContentRepository.
+	context.Services.Intercept<IContentRepository>
+	//Add a ApplyMetricsTimingInterceptor, through Castle.Core dynamic proxies, to apply measurements   
+	((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+	
+```
+
+#### Examples
+
+**Apply measuring to any Episerver abstraction - e.g. all methods within Episerver's implementation of IContentRepository**
+
+```
+	// See Registration section for context of use.
+	context.Services.Intercept<IContentRepository>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+       
+```
+
+**Apply measuring to all methods in your own abstraction**
+```
+	// See Registration section for context of use.
+	context.Services.Intercept<IDocumentRepository>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));          
+```
+
+**Apply measuring directly to all methods within an implementation**
+```
+	// See Registration section for context of use.
+	context.Services.Intercept<UrlResolver>((c, i) => proxyGenerator.CreateClassProxyWithTarget(i, new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+
+```
+
+**Scope measurement to a given method or methods**
+```
+	// See Registration section for context of use.
+	IProxyGenerationHook methodHook = new SomeMethodsHook("MethodName");
+	context.Services.Intercept<INavigationManager>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new 	ProxyGenerationOptions(methodHook), new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+
+```
+```
+	// See Registration section for context of use.
+	IProxyGenerationHook methodHook = new SomeMethodsHook("MethodName1", "MethodName2");
+	context.Services.Intercept<INavigationManager>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+```
+
+### Monitoring
+
+The add-on also provides you with a unified way of performing application or system health checks. A health check is a small self-test, which your application performs, to verify that a component or responsibility is responding correctly.
+
+```
+class AuthenticationServerHealthCheckConvention : IHealthCheckConvention
+{
+	private const string Name = "SSO";
+
+	//Dependency to validate
+	private readonly Func<IAuthenticationManager> _authenticationManager;
+
+	public AuthenticationServerHealthCheckConvention(Func<IAuthenticationManager> authenticationManager)
+	{
+		this._authenticationManager = authenticationManager;
+	}
+
+	public void Apply(IHealthCheckConventionManager healthCheckConventionManager)
+	{
+		bool skip = healthCheckConventionManager.IsHealthCheckIncluded(Name);
+
+		if (!skip)
+		{
+			healthCheckConventionManager.IncludeHealthCheck(Name, () =>
+			{
+            			//Delegate to execute when requesting a healthcheck
+				//Health check logic goes here. SSO runs if the service is healthy
+				return this._authenticationManager.Invoke().Healthy();
+			});
+		}
+	}
+}
+
+```
+
+### Registration
+
+Registration of measurements and monitors are done through an Episerver Initialization Module.
+
+
+```
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class MetricsInitialization : IConfigurableModule
+{
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+        //Measurements
+        ProxyGenerator proxyGenerator = new ProxyGenerator();
+
+        context.Services.Intercept<IContentRepository>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new 	ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+
+        IProxyGenerationHook methodHook = new SomeMethodsHook("GetUserNavigation");
+        context.Services.Intercept<INavigationManager>((c, i) => proxyGenerator.CreateInterfaceProxyWithTarget(i, new ProxyGenerationOptions(methodHook), new ApplyMetricsTimingInterceptor(c.GetInstance<IMetricManager>())));
+	
+	context.Services.AddTransient(typeof(IHealthCheckConvention), typeof(AuthenticationServerHealthCheckConvention));
+
     }
 
     public void Initialize(InitializationEngine context)
