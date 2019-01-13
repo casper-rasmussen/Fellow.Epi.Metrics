@@ -3,7 +3,7 @@ using Fellow.Epi.Metrics.Infrastructure.Interception;
 using Fellow.Epi.Metrics.Manager.HealthCheckConvention;
 using Fellow.Epi.Metrics.Manager.Metric;
 using Metrics;
-using StructureMap.Configuration.DSL;
+using StructureMap;
 
 namespace Fellow.Epi.Metrics.Bootstrapper
 {
